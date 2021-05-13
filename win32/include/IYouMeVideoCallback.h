@@ -25,6 +25,7 @@ public:
     //软件处理方式回调YUV数据格式，android不支持硬编码机型和pc回调 fmt:VIDEO_FMT_YUV420P
     virtual void onVideoFrameCallback(const char* userId, void * data, int len, int width, int height, int fmt, uint64_t timestamp){};
     virtual void onVideoFrameMixedCallback(void * data, int len, int width, int height, int fmt, uint64_t timestamp){};
+	virtual void onVideoFramePreviewCallback(void * data, int len, int width, int height, int fmt, uint64_t timestamp, int rotation,int mirror){};
     
     //ios 硬件处理方式回调，目前所有iphone ios>=8.0机型兼容，fmt:VIDEO_FMT_CVPIXELBUFFER
 	virtual void onVideoFrameCallbackGLESForIOS(const char* userId, void* pixelBuffer, int width, int height, int fmt, uint64_t timestamp){};
@@ -51,5 +52,10 @@ public:
 };
 
 
+class IYouMeAVStatisticNewCallback
+{
+public:
+    virtual void onAVStatisticNew( YouMeAVStatisticType type,  const char* userID,  int value, const char* param) = 0 ;
+};
 
 #endif /* IYouMeFrameCallback_h */

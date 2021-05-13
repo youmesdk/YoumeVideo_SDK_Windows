@@ -4,19 +4,23 @@
 //
 #ifndef __SDL_DISPLAY__
 #define __SDL_DISPLAY__
-
-
-#include <windows.h>
-#include <shlwapi.h>
-#include <io.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#ifdef WIN32
+#include <io.h>
+#include <windows.h>
+#include <shlwapi.h>
 #include <WinDef.h>
+#else
+#define HWND  int
+#endif
 
-
+#ifdef WIN32
 #define SDLDLL_API __declspec(dllexport)
-
+#else
+#define SDLDLL_API
+#endif
 
 typedef void*   _HSDL;
 
@@ -36,7 +40,7 @@ SDLDLL_API _HSDL  SDL_Display_Init(HWND hWnd, unsigned int width, unsigned int h
  * @param  pHandle 释放渲染对手
  * @return void
  */
-SDLDLL_API  void  SDL_Display_Uninit(_HSDL pHandle);
+SDLDLL_API  void  SDL_Display_Uninit(_HSDL* pHandle);
 
 /**
  * 功能描述: 传入渲染视频数据
@@ -55,5 +59,14 @@ SDLDLL_API  void  SDL_Display(_HSDL pHandle, const unsigned char * data, int wid
  * @return void
  */
 void SDL_Display_Clear(_HSDL pHandle);
+
+/**
+ * 功能描述: 设置渲染角度，默认是以中心点旋转
+ * @param pHandle 初始化返回的渲染对象
+ * @param rotation 旋转角度
+ * @return void
+ */
+void SDL_Display_Set_Rotation(_HSDL pHandle, int rotation);
+
 #endif //__SDL_DISPLAY__
 

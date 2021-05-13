@@ -1304,6 +1304,75 @@ YouMeErrorCode stopInviteMic();
 * **返回值**
 如果成功则返回YOUME_SUCCESS，其它具体参见[YouMeErrorCode类型定义](/doc/TalkStatusCode.html#youmeerrorcode类型定义)。
 
+### 设置小流帧率
+* **功能描述**
+设置小流帧率 (如果大于大流帧率，以大流帧率为准)，在进入房间之前设置
+
+* **语法**
+```c++
+YouMeErrorCode setVideoFpsForSecond(int fps);
+```
+
+* **参数说明**
+`fps`:帧率（1-30），默认15帧
+
+
+## 共享流参数配置
+### 设置共享流编码分辨率
+* **功能描述**
+设置共享流编码分辨率，在加入房间之前设置。
+
+* **语法**
+```c++
+YouMeErrorCode setVideoNetResolutionForShare( int width, int height );
+```
+
+* **参数说明**
+`width`:编码分辨率宽
+`height`:编码分辨率高
+
+* **返回值**
+错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码 
+
+### 设置共享流码率
+* **功能描述**
+设置共享视频数据上行的码率的上下限，在进入房间之前设置
+
+* **语法**
+```c++
+YouMeErrorCode setVideoCodeBitrateForShare( int maxBitrate,  int minBitrate );
+```
+
+* **参数说明**
+`maxBitrate`:最大码率，单位kbps.  0：使用默认值
+`minBitrate`:最小码率，单位kbps.  0：使用默认值
+
+### 设置共享流动态码率
+* **功能描述**
+设置共享流视频编码是否采用VBR动态码率方式，在加入房间之前设置。
+
+* **语法**
+```c++
+YouMeErrorCode setVBRForShare( boolean useVBR );
+```
+
+* **参数说明**
+`useVBR`:true 使用VBR动态码率，false 不使用VBR动态码率
+
+* **返回值**
+错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码 
+
+### 设置共享流帧率
+* **语法**
+```c++
+YouMeErrorCode setVideoFpsForShare(int fps);
+```
+
+* **参数说明**
+`fps`:帧率（1-30），默认15帧
+
+* **返回值**
+
 ### 设置视频网络传大小流调整方式
 
 * **语法**
@@ -1317,6 +1386,23 @@ YouMeErrorCode stopInviteMic();
 
 * **参数说明**
 `mode`: 0: 自动调整；1: 上层设置大小流接收选择
+
+* **返回值**
+如果成功则返回YOUME_SUCCESS，其它具体参见[YouMeErrorCode类型定义](/doc/TalkStatusCode.html#youmeerrorcode类型定义)。
+
+### 设置视频接收平滑模式开关
+
+* **语法**
+
+``` c++
+ YouMeErrorCode setVideoSmooth( int mode );
+```
+
+* **功能**
+设置视频接收平滑模式开关, 进房间前设置或进房间后动态设置
+
+* **参数说明**
+`enable`: 开关 0:关闭平滑，1:打开平滑
 
 * **返回值**
 如果成功则返回YOUME_SUCCESS，其它具体参见[YouMeErrorCode类型定义](/doc/TalkStatusCode.html#youmeerrorcode类型定义)。
@@ -1908,6 +1994,18 @@ YouMeErrorCode setVideoFps(int fps);
 * **返回值**
 如果成功则返回YOUME_SUCCESS，其它具体参见[YouMeErrorCode类型定义](/doc/TalkStatusCode.html#youmeerrorcode类型定义)。
 
+### 设置视频预览帧率
+* **语法**
+```c++
+YouMeErrorCode setVideoPreviewFps(int fps);
+```
+
+* **参数说明**
+`fps`:帧率（1-60），默认15帧
+
+* **返回值**
+错误码，0 - 表示成功,其他 - 具体错误码
+
 
 ###  设置本地视频的分辨率
 
@@ -2487,42 +2585,74 @@ void GetWindowInfoList(HWND *pHwnd, char *pWinName, int *winCount);
 	`winCount`: 获取到的窗口数量
 
 * **返回值**
-	无
+	如果成功则返回YOUME_SUCCESS，其它具体参见[YouMeErrorCode类型定义](/doc/TalkStatusCode.html#youmeerrorcode类型定义)。
 
+### 获取屏幕列表
+* **语法**
 
-### 设置共享视频模式和参数
+``` c++
+void GetScreenInfoList(HWND *pHwnd, char *pScreenName, int *ScreenCount);
+```
+
+* **功能**
+获取当前屏幕列表信息(包括屏幕名称和屏幕句柄)，主要用于在屏幕共享模式下给用户选择屏幕句柄并在StartShareStream设置给SDK
+
+* **参数说明**
+	`pHwnd`: 屏幕句柄列表，和窗口名称列表一一对应
+	`pScreenName`: 屏幕名称列表，和屏幕句柄列表一一对应
+	`ScreenCount`: 获取到的屏幕数量
+
+* **返回值**
+	如果成功则返回YOUME_SUCCESS，其它具体参见[YouMeErrorCode类型定义](/doc/TalkStatusCode.html#youmeerrorcode类型定义)。
+
+### 排除指定窗口
 
 * **语法**
 
 ``` c++
-YouMeErrorCode SetShareParameter(int mode, HWND renderHandle, HWND captureHandle);
+YouMeErrorCode setShareExclusiveWnd(HWND windowid);
 ```
 
 * **功能**
-设置共享视频相关参数：包括共享视频采集源，预览窗口句柄，待采集窗口句柄(出口录制模式必选)
+屏幕共享时，排除指定的窗口, 建议在开始共享前设置
 
 * **参数说明**
-	`mode`: 共享视频采集模式  2：采集指定窗口; 3：采集桌面; 其他值非法
-	`renderHandle`: 共享视频preview窗口句柄，必选
-	`captureHandle`: 指定需要采集的窗口句柄，采集桌面则可以设置为NULL
+	`windowid`: 窗口句柄。屏幕共享时，将被排除。
 
 * **返回值**
 	错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码
 
+### 边框开关
+
+* **语法**
+
+```
+void enableShareBorder(bool bEnable);
+```
+* **功能**
+共享屏幕或者共享窗口时，是否打开绘制边框的功能，在SDK初始化之后，开始共享前调用
+
+* **参数说明**
+    `bEnable`: true,共享时绘制边框；false，共享时，不绘制边框。
+
+* **返回值**
+	无
 
 ### 开始共享
 
 * **语法**
 
 ``` c++
-YouMeErrorCode StartShareStream();
+YouMeErrorCode StartShareStream(int mode, HWND renderHandle, HWND captureHandle);
 ```
 
 * **功能**
 开始视频共享，并将(屏幕/窗口)共享视频流实时发送到房间内其他人；注意在一个房间内，同时只能有一个人共享视频
 
 * **参数说明**
-	无
+	`mode`: 共享视频采集模式  1：采集设备 2：采集指定窗口 3：采集桌面
+	`renderHandle`: 共享视频preview窗口句柄，非必选
+	`captureHandle`: 共享窗口时，传窗口句柄；共享屏幕时，传屏幕句柄或者NULL
 
 * **返回值**
 	错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码
@@ -2543,3 +2673,123 @@ void StopShareStream();
 * **返回值**
 	无
 
+### 设置是否开启扬声器内录功能
+
+* **语法**
+
+``` c++
+YouMeErrorCode setSpeakerRecordOn(bool enabled);
+```
+
+* **功能**
+设置是否开启扬声器内录功能。将扬声器声音mix以后，发送给听众
+
+* **参数说明**
+	`enabled`: true，打开内录功能；false，关闭内录功能
+
+* **返回值**
+	错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码
+
+### 获取当前是否已开启扬声器内录功能
+
+* **语法**
+
+``` c++
+bool isSpeakerRecording();
+```
+
+* **功能**
+判断是否正在录制扬声器。
+
+* **参数说明**
+	无
+
+* **返回值**
+	错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码
+
+### 清除内录缓存数据
+
+* **语法**
+
+``` c++
+YouMeErrorCode cleanSpeakerRecordCache();
+```
+
+* **功能**
+清除内录缓存数据，主要用来给主播电脑放歌一段时间感觉有延迟后，手动清除缓存数据。
+
+* **参数说明**
+	无
+
+* **返回值**
+	错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码
+
+### 设置是否强制关闭软件AEC 
+
+* **语法**
+
+``` c++
+YouMeErrorCode setForceDisableAEC(bool disable);
+```
+
+* **功能**
+设置是否强制关闭软件AEC 处理,声卡内录模式播放音乐的话，戴耳机的情况下可以强制关闭，提高音乐质量
+
+* **参数说明**
+	`disable`: true，强制关闭；false，强制开启
+
+* **返回值**
+	错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码
+
+### 设置是否强制关闭软件AGC
+
+* **语法**
+
+``` c++
+ YouMeErrorCode setForceDisableAGC(bool disable);
+```
+
+* **功能**
+设置是否强制关闭软件AGC 处理,声卡内录模式播放音乐的话，戴耳机的情况下可以强制关闭，提高音乐质量
+
+* **参数说明**
+	`disable`: true，强制关闭；false，强制开启
+
+* **返回值**
+	错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码
+
+## 本地录制相关接口
+### 开始本地录制
+
+* **语法**
+
+``` c++
+YouMeErrorCode startSaveScreen(const char* filePath, HWND renderHandle, HWND captureHandle);
+```
+
+* **功能**
+开始本地录制，将当前会议屏幕录制，存储在本地路径(目前仅实现了屏幕录制功能)
+
+* **参数说明**
+    `filePath`: 录像文件路径，目前只支持mp4格式
+	`renderHandle`: 渲染窗口句柄，调用libscreen必带参数，不为空
+	`captureHandle`: 录屏句柄，如果为空，则表示录制整个屏幕；如果不为空，则表示录制某个窗口
+
+* **返回值**
+    错误码，YOUME_SUCCESS - 表示成功,其他 - 具体错误码
+
+### 停止本地录制
+
+* **语法**
+
+```
+YouMeErrorCode startSaveScreen( const char*  filePath);
+```
+* **功能**
+停止本地录制
+
+* **参数说明**
+    无
+
+* **返回值**
+    无

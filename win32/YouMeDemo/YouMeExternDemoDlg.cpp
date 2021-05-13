@@ -911,7 +911,7 @@ LRESULT CYouMeExternDemoDlg::OnMemberChange(WPARAM wParam, LPARAM lParam){
 * 音视频统计信息
 */
 LRESULT CYouMeExternDemoDlg::OnAvStaticMsg(WPARAM wParam, LPARAM lParam){
-
+	return 0;
 	std::string user = (char*)wParam;
 	int value = *(int*)lParam;
 
@@ -1194,3 +1194,4 @@ LRESULT CYouMeExternDemoDlg::OnUninitMessage(WPARAM w, LPARAM l)
 	}
 	return 0;
 }
+

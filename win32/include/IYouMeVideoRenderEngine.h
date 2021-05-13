@@ -68,6 +68,13 @@ public:
 	*/
 	void deleteAllRender();
 
+	/**
+	 *  功能描述: 设置视频渲染旋转角度
+	 *  @param  userId:指定渲染用户ID
+	 *  @param  rotation:旋转角度,目前取值90, 180, 270
+	 *  @return 0:sucess, others error
+	 */
+	int setRenderRotation(const char* userId, int rotation);
 public:
 	IYouMeVideoRenderEngine();
 	~IYouMeVideoRenderEngine();

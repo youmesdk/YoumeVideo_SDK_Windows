@@ -41,7 +41,19 @@ typedef enum YouMeAVStatisticType
     YOUME_AVS_VIDEO_PACKET_UP_LOSS_HALF = 12,   //视频上行的服务器丢包率(半程)，千分比
     YOUME_AVS_RECV_DATA_STAT = 13,              //下行带宽,单位Bps
     YOUME_AVS_VIDEO_SHARE_CODERATE  = 14,       //共享视频传输码率，userid是自己:上行码率，userid其它人:下行码率，单位Bps
+    YOUME_AVS_VIDEO_SHARE_FRAMERATE = 15,       //共享视频传输帧率，userid是自己:上行帧率，userid其它人:下行帧率
+    YOUME_AVS_VIDEO_RESOLUTION = 16,            //视频分辨率上报, userid是自己:上行分辨率，userid其它人:下行分辨率
+    YOUME_AVS_VIDEO_SHARE_RESOLUTION = 17,      //共享流分辨率上报, userid是自己:上行分辨率，userid其它人:下行分辨率
+    YOUME_AVS_SEND_DATA_STAT = 18,              //上行带宽,单位Bps
 } YouMeAVStatisticType_t;
+
+typedef enum YouMeAudioRouteType
+{
+    YOUME_AUDIO_ROUTE_SPEAKER               = 0,    // 手机扬声器
+    YOUME_AUDIO_ROUTE_EARPIECE              = 1,    // 听筒
+    YOUME_AUDIO_ROUTE_HEADSET               = 2,    // 耳机
+    YOUME_AUDIO_ROUTE_HEADSET_BLUETOOTH     = 3,    // 蓝牙耳机
+} YouMeAudioRouteType_t;
 
 /// 事件通知
 typedef enum YouMeEvent {
@@ -125,11 +137,18 @@ typedef enum YouMeEvent {
     
     YOUME_EVENT_OTHERS_BE_KICKED             = 67,  ///< 房间里其他人被踢出房间
     //68-71 talk已占用
-    YOUME_EVENT_AUDIO_START_FAIL             = 72,  ///< 音频启动失败，可能是设备被其他应用占用
-    YOUME_EVENT_AUDIO_INPUT_DEVICE_CONNECT     = 73,    ///< 音频采集设备插入，移动端无效
+	YOUME_EVENT_SPEAK_RECORD_ON				 = 68,	///< 扬声器内录开启通知（成功、失败）
+	YOUME_EVENT_SPEAK_RECORD_OFF			 = 69,	///< 扬声器内录关闭通知（成功、失败）
+	YOUME_EVENT_SPEAK_RECORD_RESET			 = 70,	///< 扬声器内录重启通知（成功、失败）
+    
+    YOUME_EVENT_EFFECT_PLAY_COMPLETE            = 71,   ///< 音效播放完成
+    YOUME_EVENT_AUDIO_START_FAIL                = 72,   ///< 音频启动失败，可能是设备被其他应用占用
+    YOUME_EVENT_AUDIO_INPUT_DEVICE_CONNECT      = 73,   ///< 音频采集设备插入，移动端无效
     YOUME_EVENT_AUDIO_INPUT_DEVICE_DISCONNECT   = 74,   ///< 音频采集设备拔出，移动端无效
 
-    YOUME_EVENT_SWITCH_OUTPUT               = 75,   ///< 切换扬声器/听筒
+    YOUME_EVENT_SWITCH_OUTPUT                = 75, ///< 切换扬声器/听筒
+	YOUME_EVENT_BGM_OR_SPEAR_RECORD          = 76, ///< 背景音乐 或者 内录，同一时间，只能打开一个  
+    YOUME_EVENT_AUDIO_ROUTE_CHANGE           = 77, ///< 音频路由改变事件 (YouMeAudioRouteType_t)
 
     YOUME_EVENT_OTHERS_VIDEO_ON              = 200, ///< 收到其它用户的视频流
 
@@ -141,53 +160,66 @@ typedef enum YouMeEvent {
     YOUME_EVENT_OTHERS_VIDEO_INPUT_START     = 209, ///< 其他用户视频输入开始（内部采集下开启摄像头/外部输入下开始input）
     YOUME_EVENT_OTHERS_VIDEO_INPUT_STOP      = 210, ///< 其他用户视频输入停止（内部采集下停止摄像头/外部输入下停止input）
     
-    YOUME_EVENT_MEDIA_DATA_ROAD_PASS         = 211, ///音视频数据通路连通，定时检测，一开始收到数据会收到PASS事件，之后变化的时候会发送
-    YOUME_EVENT_MEDIA_DATA_ROAD_BLOCK        = 212, ///音视频数据通路不通
+    YOUME_EVENT_MEDIA_DATA_ROAD_PASS         = 211, ///< 音视频数据通路连通，定时检测，一开始收到数据会收到PASS事件，之后变化的时候会发送
+    YOUME_EVENT_MEDIA_DATA_ROAD_BLOCK        = 212, ///< 音视频数据通路不通
     
-    YOUME_EVENT_QUERY_USERS_VIDEO_INFO       = 213, ///查询用户视频信息返回
-    YOUME_EVENT_SET_USERS_VIDEO_INFO         = 214, ///设置用户接收视频信息返回
+    YOUME_EVENT_QUERY_USERS_VIDEO_INFO       = 213, ///< 查询用户视频信息返回
+    YOUME_EVENT_SET_USERS_VIDEO_INFO         = 214, ///< 设置用户接收视频信息返回
     
     YOUME_EVENT_LOCAL_VIDEO_INPUT_START      = 215, ///< 本地视频输入开始（内部采集下开始摄像头/外部输入下开始input）
     YOUME_EVENT_LOCAL_VIDEO_INPUT_STOP       = 216, ///< 本地视频输入停止（内部采集下停止摄像头/外部输入下停止input）
     
-    YOUME_EVENT_START_PUSH                    = 217,    //设置startPush的返回事件
-    YOUME_EVENT_SET_PUSH_MIX                  = 218,    //设置setPushMix的返回事件
-    YOUME_EVENT_ADD_PUSH_MIX_USER             = 219,    //设置addPushMixUser的返回事件，参数userID
-    YOUME_EVENT_OTHER_SET_PUSH_MIX            = 220,    //在自己调用了setPushMix还没停止的情况下，房间内有别人调用setPushMix，自己被踢
+    YOUME_EVENT_START_PUSH                   = 217, ///< 设置startPush的返回事件
+    YOUME_EVENT_SET_PUSH_MIX                 = 218, ///< 设置setPushMix的返回事件
+    YOUME_EVENT_ADD_PUSH_MIX_USER            = 219, ///< 设置addPushMixUser的返回事件，参数userID
+    YOUME_EVENT_OTHER_SET_PUSH_MIX           = 220, ///< 在自己调用了setPushMix还没停止的情况下，房间内有别人调用setPushMix，自己被踢
 
-    YOUME_EVENT_LOCAL_SHARE_INPUT_START      = 221,     ///< 本地共享视频输入开始
-    YOUME_EVENT_LOCAL_SHARE_INPUT_STOP       = 222,     ///< 本地共享视频输入停止
-    YOUME_EVENT_OTHERS_SHARE_INPUT_START     = 223,     ///< 其他用户共享视频输入开始
-    YOUME_EVENT_OTHERS_SHARE_INPUT_STOP      = 224,     ///< 其他用户共享视频输入停止
+    YOUME_EVENT_LOCAL_SHARE_INPUT_START      = 221, ///< 本地共享视频输入开始
+    YOUME_EVENT_LOCAL_SHARE_INPUT_STOP       = 222, ///< 本地共享视频输入停止
+    YOUME_EVENT_OTHERS_SHARE_INPUT_START     = 223, ///< 其他用户共享视频输入开始
+    YOUME_EVENT_OTHERS_SHARE_INPUT_STOP      = 224, ///< 其他用户共享视频输入停止
     
-    YOUME_EVENT_SET_USERS_VIDEO_INFO_NOTIFY  = 225, /// 设置用户接收视频信息给发送方的通知
+    YOUME_EVENT_SET_USERS_VIDEO_INFO_NOTIFY  = 225, ///< 设置用户接收视频信息给发送方的通知
+    
+    YOUME_EVENT_OTHER_PLAY_BACKGRAOUND_MUSIC = 226, ///其他人播放背景音乐
+    YOUME_EVENT_OTHER_STOP_BACKGRAOUND_MUSIC = 227, ///其他人停止背景音乐
 
-    YOUME_EVENT_OTHERS_DATA_ERROR            = 300, /// 数据错误
-    YOUME_EVENT_OTHERS_NETWORK_BAD           = 301, /// 网络不好
-    YOUME_EVENT_OTHERS_BLACK_FULL            = 302, /// 黑屏
-    YOUME_EVENT_OTHERS_GREEN_FULL            = 303, /// 绿屏
-    YOUME_EVENT_OTHERS_BLACK_BORDER          = 304, /// 黑边
-    YOUME_EVENT_OTHERS_GREEN_BORDER          = 305, /// 绿边
-    YOUME_EVENT_OTHERS_BLURRED_SCREEN        = 306, /// 花屏
-    YOUME_EVENT_OTHERS_ENCODER_ERROR         = 307, /// 编码错误
-    YOUME_EVENT_OTHERS_DECODER_ERROR         = 308, /// 解码错误
+    YOUME_EVENT_OTHERS_DATA_ERROR            = 300, ///< 数据错误
+    YOUME_EVENT_OTHERS_NETWORK_BAD           = 301, ///< 网络不好
+    YOUME_EVENT_OTHERS_BLACK_FULL            = 302, ///< 黑屏
+    YOUME_EVENT_OTHERS_GREEN_FULL            = 303, ///< 绿屏
+    YOUME_EVENT_OTHERS_BLACK_BORDER          = 304, ///< 黑边
+    YOUME_EVENT_OTHERS_GREEN_BORDER          = 305, ///< 绿边
+    YOUME_EVENT_OTHERS_BLURRED_SCREEN        = 306, ///< 花屏
+    YOUME_EVENT_OTHERS_ENCODER_ERROR         = 307, ///< 编码错误
+    YOUME_EVENT_OTHERS_DECODER_ERROR         = 308, ///< 解码错误
     
-    YOUME_EVENT_CAMERA_DEVICE_CONNECT        = 400, /// 摄像头设备插入，移动端无效
-    YOUME_EVENT_CAMERA_DEVICE_DISCONNECT     = 401, /// 摄像头设备拔出，移动端无效
+    YOUME_EVENT_CAMERA_DEVICE_CONNECT        = 400, ///< 摄像头设备插入，移动端无效
+    YOUME_EVENT_CAMERA_DEVICE_DISCONNECT     = 401, ///< 摄像头设备拔出，移动端无效
+
+    YOUME_EVENT_AUDIO_HOWLING_DETECTION      = 450, ///< 检测到啸叫
 
     // video encode param report
     YOUME_EVENT_VIDEO_ENCODE_PARAM_REPORT    = 500,
     YOUME_EVENT_VIDEO_DECODE_PARAM_REPORT    = 501,
 
     // p2p/server route
-    YOUME_EVENT_RTP_ROUTE_P2P                = 600, /// P2P通路检测ok, 当前通路为P2P
-    YOUME_EVENT_RTP_ROUTE_SEREVER            = 601, /// P2P通路检测失败, 当前通路为server转发
-    YOUME_EVENT_RTP_ROUTE_CHANGE_TO_SERVER   = 602, /// 运行过程中P2P 检测失败，切换到server转发
+    YOUME_EVENT_RTP_ROUTE_P2P                = 600, ///< P2P通路检测ok, 当前通路为P2P
+    YOUME_EVENT_RTP_ROUTE_SEREVER            = 601, ///< P2P通路检测失败, 当前通路为server转发
+    YOUME_EVENT_RTP_ROUTE_CHANGE_TO_SERVER   = 602, ///< 运行过程中P2P 检测失败，切换到server转发
+    YOUME_EVENT_RTP_ROUTE_SERVER_WITH_P2P_PROBE   = 603, ///< server转发模式下，P2P探测成功
 
-    YOUME_EVENT_RECOGNIZE_MODULE_INIT_START  = 700, /// 语音识别初始化开始
-    YOUME_EVENT_RECOGNIZE_MODULE_INIT_END    = 701, /// 语音识别初始化完成
-    YOUME_EVENT_RECOGNIZE_MODULE_UNINIT      = 702, /// 语音识别结束
-    YOUME_EVENT_RECOGNIZE_MODULE_ERR         = 703, /// 语音识别出错
+    YOUME_EVENT_RECOGNIZE_MODULE_INIT_START  = 700, ///< 语音识别初始化开始
+    YOUME_EVENT_RECOGNIZE_MODULE_INIT_END    = 701, ///< 语音识别初始化完成
+    YOUME_EVENT_RECOGNIZE_MODULE_UNINIT      = 702, ///< 语音识别结束
+    YOUME_EVENT_RECOGNIZE_MODULE_ERR         = 703, ///< 语音识别出错
+
+    // for windows/mac share
+	YOUME_EVENT_LOCAL_SHARE_WINDOW_CLOSED	 = 725, ///< 共享窗口被关闭
+    YOUME_EVENT_LOCAL_SHARE_WINDOW_INVSIABLE = 726, ///< 共享窗口被隐藏，不可见
+    YOUME_EVENT_LOCAL_SHARE_WINDOW_ISICONIC  = 727, ///< 共享窗口被最小化
+    YOUME_EVENT_LOCAL_SHARE_WINDOW_NORMAL    = 728, ///< 共享窗口恢复正常
+	YOUME_EVENT_LOCAL_SHARE_WINDOW_MOVE		 = 729, ///< 共享窗口位置发生变化
 
     YOUME_EVENT_EOF                          = 1000,
     
@@ -334,7 +366,8 @@ typedef enum YOUME_AUDIO_QUALITY {
 typedef enum YouMeVideoRenderMode {
     YOUME_VIDEO_RENDER_MODE_HIDDEN = 0,
     YOUME_VIDEO_RENDER_MODE_FIT = 1,
-    YOUME_VIDEO_RENDER_MODE_ADAPTIVE = 2
+    YOUME_VIDEO_RENDER_MODE_ADAPTIVE = 2,
+    YOUME_VIDEO_RENDER_MODE_STRETCH = 3
 }YouMeVideoRenderMode_t;
 
 typedef enum YouMeVideoMirrorMode {
@@ -364,9 +397,9 @@ typedef enum YOUME_VIDEO_FMT{
 }YOUME_VIDEO_FMT_t;
 
 typedef enum YOUME_VIDEO_SHARE_TYPE {
-    VIDEO_SHARE_TYPE_DEVICE = 1,    // 设备源
-    VIDEO_SHARE_TYPE_WINDOW = 2,
-    VIDEO_SHARE_TYPE_SCREEN = 3,
+    VIDEO_SHARE_TYPE_DEVICE = 1,    // device capture(eg:camera)
+    VIDEO_SHARE_TYPE_WINDOW = 2,    // window capture
+    VIDEO_SHARE_TYPE_SCREEN = 3,    // screen capture
     VIDEO_SHARE_TYPE_UNKNOW,
 }YOUME_VIDEO_SHARE_TYPE_t;
 
@@ -532,6 +565,16 @@ typedef enum YMVideoCodecType{
     YOUME_VIDEO_CODEC_H264 = 0,
     YOUME_VIDEO_CODEC_H265,
     YOUME_VIDEO_CODEC_VP8,
+    YOUME_VIDEO_CODEC_VP9,
 }YMVideoCodecType_t;
+
+//订阅视频流类型，0:大流 1:小流 2:共享流 3:大流+共享流 4:小流+共享流
+typedef enum YMVideoStreamType{
+    YOUME_VIDEO_STREAM_MAIN = 0,
+    YOUME_VIDEO_STREAM_SUB,
+    YOUME_VIDEO_STREAM_SHARE,
+    YOUME_VIDEO_STREAM_MAIN_AND_SHARE,
+    YOUME_VIDEO_STREAM_SUB_AND_SHARE,
+}YMVideoStreamType_t;
 
 #endif // cocos2d_x_sdk_YouMeErrorCode_h

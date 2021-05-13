@@ -38,10 +38,10 @@ void YouMeVideoDlg::PictureIncoming(LPVOID param, LPBYTE data, UINT length, ULON
 void YouMeVideoDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_STATIC_VIDEO1, m_videoView1);
-	DDX_Control(pDX, IDC_STATIC_VIDEO2, m_videoView2);
-	DDX_Control(pDX, IDC_STATIC_VIDEO3, m_videoView3);
-	DDX_Control(pDX, IDC_STATIC_VIDEO4, m_videoView4);
+	//DDX_Control(pDX, IDC_STATIC_VIDEO1, m_videoView1);
+	//DDX_Control(pDX, IDC_STATIC_VIDEO2, m_videoView2);
+	//DDX_Control(pDX, IDC_STATIC_VIDEO3, m_videoView3);
+	//DDX_Control(pDX, IDC_STATIC_VIDEO4, m_videoView4);
 	DDX_Control(pDX, IDC_COMBO1, m_CameraComboBox);
 }
 
@@ -71,7 +71,7 @@ BOOL YouMeVideoDlg::OnInitDialog()
 	for (int i = 0; i < count; i++){
 		std::string strName = IYouMeVoiceEngine::getInstance()->getCameraName(i);
 		CString wsName;
-		charTowchar(strName, wsName);
+		Utf8ToCString(wsName, strName.c_str());
 		m_CameraComboBox.InsertString(i, wsName);
 	}
 	if (count)
@@ -153,7 +153,7 @@ void YouMeVideoDlg::OnBnClickedButtonCamRefresh()
 	for (int i = 0; i < count; i++) {
 		std::string strName = IYouMeVoiceEngine::getInstance()->getCameraName(i);
 		CString wsName;
-		charTowchar(strName, wsName);
+		Utf8ToCString(wsName, strName.c_str());
 		m_CameraComboBox.InsertString(i, wsName);
 	}
 	if (count)

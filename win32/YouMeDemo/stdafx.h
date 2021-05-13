@@ -66,6 +66,60 @@
 
 #include<string>
 
+static bool Utf8ToCString(CString& cstr, const char* utf8Str)
+{
+	size_t utf8StrLen = strlen(utf8Str);
+
+	if (utf8StrLen == 0)
+	{
+		cstr.Empty();
+		return true;
+	}
+
+	LPWSTR ptr = cstr.GetBuffer(utf8StrLen + 1);
+
+#ifdef UNICODE
+	int newLen = MultiByteToWideChar(CP_UTF8, 0, utf8Str, utf8StrLen, ptr, utf8StrLen + 1);
+	if (!newLen)
+	{
+		cstr.ReleaseBuffer(0);
+		return false;
+	}
+#else
+	WCHAR* buf = (WCHAR*)malloc(utf8StrLen);
+
+	if (buf == NULL)
+	{
+		cstr.ReleaseBuffer(0);
+		return false;
+	}
+
+	int newLen = MultiByteToWideChar(CP_UTF8, 0,utf8Str, utf8StrLen, buf, utf8StrLen);
+	if (!newLen)
+	{
+		free(buf);
+		cstr.ReleaseBuffer(0);
+		return false;
+	}
+
+	newLen = WideCharToMultiByte(CP_ACP, 0,buf, newLen, ptr, utf8StrLen);
+	if (!newLen)
+	{
+		free(buf);
+		cstr.ReleaseBuffer(0);
+		return false;
+	}
+
+	free(buf);
+#endif
+	cstr.ReleaseBuffer(newLen);
+
+	return true;
+}
+
+
+
+
 static void charTowchar(const std::string& chr, CString& wchar)
 {
 	int len = chr.length() * sizeof(wchar_t) + 1;

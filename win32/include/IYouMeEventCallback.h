@@ -56,8 +56,15 @@ public:
 class IYouMeVideoPreDecodeCallback
 {
 public:
-    //需要先调用setVideoPreDecodeCallBackEnable
-    virtual void onVideoPreDecode(const char* userId, void* data, int dataSizeInByte, unsigned long long timestamp) = 0;
+    /*
+     * 功能：视频数据回调（需要先调用setVideoPreDecodeCallBackEnable）
+     * @param userId: 用户ID
+     * @param data: 视频数据
+     * @param dataSizeInByte: 视频数据长度 
+     * @param timestamp: 视频时间戳
+     * @param type: 视频数据类型，0: h264; 1: yuv420;
+     */
+    virtual void onVideoPreDecode(const char* userId, void* data, int dataSizeInByte, unsigned long long timestamp, int type) = 0;
 };
 
 class IRestApiCallback{
